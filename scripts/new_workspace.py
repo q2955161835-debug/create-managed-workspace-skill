@@ -1,4 +1,4 @@
-"""Create a standard managed workspace."""
+"""Create a managed workspace."""
 
 from __future__ import annotations
 
@@ -8,8 +8,9 @@ from datetime import datetime
 from pathlib import Path
 
 
-ROOT_DIRS = ["doc", "skills", "tasks", "output", "try"]
-ROOT_KEEP_DIRS = ["skills", "output", "try"]
+ROOT_DIRS = ["doc", "tasks", "output", "try"]
+ROOT_KEEP_DIRS = ["output", "try"]
+WORKSPACE_KINDS = ("multi-task", "specialized")
 
 
 def now_minute() -> str:
@@ -38,7 +39,12 @@ def maybe_git_init(root: Path) -> None:
     subprocess.run(["git", "commit", "-m", "chore: baseline managed workspace"], cwd=root, check=True)
 
 
-def workspace_agents(name: str) -> str:
+def workspace_agents(name: str, workspace_kind: str) -> str:
+    skills_rule = (
+        "- 根目录 `skills/` 用于存放本专一任务类型工作区常用 Skill（技能），新建时保持空目录。\n"
+        if workspace_kind == "specialized"
+        else "- 多任务通用工作区默认不创建根目录 `skills/`；只有转换为专一任务类型工作区时才新增。\n"
+    )
     return f"""# {name} 工作区规则
 
 ## 任务归属
@@ -54,7 +60,7 @@ def workspace_agents(name: str) -> str:
 - `try/` 只放该小项目的测试、调试、临时验证文件，清空后不得影响正式结果。
 
 ## 工作区目录
-- 根目录 `skills/` 用于后续存放本工作区常用 Skill（技能），新建时保持空目录。
+{skills_rule.rstrip()}
 - 根目录 `try/` 只用于工作区级一次性调试和测试。
 - 根目录 `output/` 可保留历史成品；新任务产物优先放入对应 `tasks/.../output/`。
 
@@ -69,15 +75,21 @@ def workspace_agents(name: str) -> str:
 """
 
 
-def create_workspace(root: Path, name: str, overwrite: bool, init_git: bool) -> Path:
+def create_workspace(root: Path, name: str, overwrite: bool, init_git: bool, workspace_kind: str) -> Path:
     root.mkdir(parents=True, exist_ok=True)
-    for folder in ROOT_DIRS:
+    root_dirs = list(ROOT_DIRS)
+    root_keep_dirs = list(ROOT_KEEP_DIRS)
+    if workspace_kind == "specialized":
+        root_dirs.append("skills")
+        root_keep_dirs.append("skills")
+
+    for folder in root_dirs:
         (root / folder).mkdir(parents=True, exist_ok=True)
-    for folder in ROOT_KEEP_DIRS:
+    for folder in root_keep_dirs:
         touch_keep(root / folder)
 
     stamp = now_minute()
-    write_file(root / "AGENTS.md", workspace_agents(name), overwrite)
+    write_file(root / "AGENTS.md", workspace_agents(name, workspace_kind), overwrite)
     write_file(
         root / ".gitignore",
         """.env
@@ -106,17 +118,20 @@ tasks/*/try/**
         f"""# 项目地图
 
 ## 项目目标
-- `{name}` 是托管工作区，用于管理跨会话任务、小项目、产物、规则和可复用 Skill（技能）。
+- `{name}` 是托管工作区，用于管理跨会话任务、小项目、产物和规则。
 
 ## 目录职责
 - `AGENTS.md`：工作区规则。
 - `doc/任务索引.md`：跨会话任务总索引。
 - `doc/进展记录.md`：工作区级阶段总览。
 - `doc/项目地图.md`：长期维护信息。
-- `skills/`：工作区常用 Skill（技能）收纳位，新建时为空。
+{"- `skills/`：专一任务类型工作区常用 Skill（技能）收纳位，新建时为空。" if workspace_kind == "specialized" else "- 多任务通用工作区默认不创建 `skills/`；若后续转为专一任务类型工作区，再新增并记录用途。"}
 - `tasks/`：小项目目录。
 - `output/`：历史成品或工作区级交付物。
 - `try/`：工作区级测试、调试、临时验证文件。
+
+## 工作区类型
+- {workspace_kind}
 
 ## 环境账本
 - `.env`：真实敏感配置，本机保存并禁止提交。
@@ -150,7 +165,7 @@ tasks/*/try/**
 
 ## {stamp} ~ {stamp}
 - 本阶段完成内容：创建标准托管工作区结构。
-- 新增/修改/生成的文件清单与用途说明：`AGENTS.md`、`.gitignore`、`.env.example`、`doc/`、`skills/`、`tasks/`、`output/`、`try/`。
+- 新增/修改/生成的文件清单与用途说明：`AGENTS.md`、`.gitignore`、`.env.example`、`doc/`、{"`skills/`、" if workspace_kind == "specialized" else ""}`tasks/`、`output/`、`try/`。
 - 错误汇报：无。
 """,
         overwrite,
@@ -172,13 +187,25 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("path", help="Workspace root path to create")
     parser.add_argument("--name", help="Human-readable workspace name")
+    parser.add_argument(
+        "--workspace-kind",
+        choices=WORKSPACE_KINDS,
+        default="multi-task",
+        help="multi-task creates no root skills directory; specialized creates root skills directory",
+    )
+    parser.add_argument(
+        "--specialized",
+        action="store_true",
+        help="Shortcut for --workspace-kind specialized",
+    )
     parser.add_argument("--overwrite", action="store_true", help="Overwrite existing managed files")
     parser.add_argument("--init-git", action="store_true", help="Initialize Git and create a baseline commit if needed")
     args = parser.parse_args()
 
     root = Path(args.path).resolve()
     name = args.name or root.name
-    created = create_workspace(root, name, args.overwrite, args.init_git)
+    workspace_kind = "specialized" if args.specialized else args.workspace_kind
+    created = create_workspace(root, name, args.overwrite, args.init_git, workspace_kind)
     print(created)
 
 

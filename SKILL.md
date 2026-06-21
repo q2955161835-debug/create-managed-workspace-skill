@@ -1,13 +1,18 @@
 ---
 name: create-managed-workspace
-description: Create and validate a standard managed workspace for recurring project work. Use when Codex needs to create a new workspace with AGENTS.md rules, doc/ project records, tasks/YYYYMMDD-slug task folders, per-task try folders, root skills storage, environment ledger files, or when planning alignment of existing CAD, scraping, automation, research, or multi-output workspaces to this structure.
+description: Create and validate managed workspaces for recurring project work. Use when Codex needs to create a multi-task workspace with AGENTS.md rules, doc/ project records, tasks/YYYYMMDD-slug task folders, per-task try folders, environment ledger files, or a specialized task-type workspace that also needs root skills storage. Also use when planning alignment of existing CAD, scraping, automation, research, or multi-output workspaces to this structure.
 ---
 
 # Create Managed Workspace
 
 ## Overview
 
-Use this skill to create a repeatable workspace for projects that will produce files, span sessions, or contain many small tasks. The first version creates a single standard structure; do not choose CAD or scraping profiles.
+Use this skill to create a repeatable workspace for projects that will produce files, span sessions, or contain many small tasks. Choose the workspace kind before creation:
+
+- `multi-task`: default for general workspaces that hold unrelated or loosely related projects. Do not create root `skills/`.
+- `specialized`: use for a dedicated task-type workspace such as CAD, scraping, automation, or research where the workspace should keep common skills or skill entrypoints. Create root `skills/`.
+
+Do not choose CAD or scraping profiles; use one structure plus the task-type adjustment notes.
 
 ## First Actions
 
@@ -18,9 +23,9 @@ Use this skill to create a repeatable workspace for projects that will produce f
 - Use `scripts/new_task.py` for a new small project under an existing managed workspace.
 - Use `scripts/validate_workspace.py` after creation or before claiming the workspace is ready.
 
-## Standard Workspace
+## Standard Multi-Task Workspace
 
-Create this root structure:
+Create this root structure by default:
 
 ```text
 <workspace-root>/
@@ -31,8 +36,6 @@ Create this root structure:
 │  ├─ 项目地图.md
 │  ├─ 任务索引.md
 │  └─ 进展记录.md
-├─ skills/
-│  └─ .gitkeep
 ├─ tasks/
 │  ├─ README.md
 │  └─ YYYYMMDD-短任务名/
@@ -48,9 +51,18 @@ Create this root structure:
 └─ try/
 ```
 
+For a specialized task-type workspace, add:
+
+```text
+<workspace-root>/
+└─ skills/
+   └─ .gitkeep
+```
+
 Rules:
 
-- Keep root `skills/` empty except `.gitkeep` at creation time. Later store commonly used workspace-specific skills there.
+- Do not create root `skills/` for a general multi-task workspace.
+- Create root `skills/` only for a specialized task-type workspace. Keep it empty except `.gitkeep` at creation time, then store commonly used workspace-specific skills or documented entrypoints there.
 - Keep root `try/` for workspace-level experiments only.
 - Give every task directory its own `try/`; clearing a task `try/` must not affect formal results.
 - Put task context in `tasks/YYYYMMDD-slug/README.md`.
@@ -66,10 +78,22 @@ Create a workspace:
 python D:\2Folder\skills\create-managed-workspace\scripts\new_workspace.py "D:\path\workspace" --name "工作区名称"
 ```
 
+Create a specialized task-type workspace with root `skills/`:
+
+```powershell
+python D:\2Folder\skills\create-managed-workspace\scripts\new_workspace.py "D:\path\cad-workspace" --name "CAD 工作区" --workspace-kind specialized
+```
+
 PowerShell wrapper:
 
 ```powershell
 D:\2Folder\skills\create-managed-workspace\scripts\New-Workspace.ps1 -Path "D:\path\workspace" -Name "工作区名称"
+```
+
+Specialized wrapper:
+
+```powershell
+D:\2Folder\skills\create-managed-workspace\scripts\New-Workspace.ps1 -Path "D:\path\cad-workspace" -Name "CAD 工作区" -WorkspaceKind specialized
 ```
 
 Create a task:
@@ -82,6 +106,12 @@ Validate:
 
 ```powershell
 python D:\2Folder\skills\create-managed-workspace\scripts\validate_workspace.py "D:\path\workspace"
+```
+
+Validate specialized mode explicitly:
+
+```powershell
+python D:\2Folder\skills\create-managed-workspace\scripts\validate_workspace.py "D:\path\cad-workspace" --workspace-kind specialized
 ```
 
 ## References

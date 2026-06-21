@@ -4,13 +4,14 @@ Use this checklist before finishing workspace creation or editing generated rule
 
 ## Root（根目录）
 
-- `AGENTS.md` describes task ownership, task folders, root `skills/`, root `try/`, progress records, and environment ledgers.
+- `AGENTS.md` describes task ownership, task folders, workspace kind, root `try/`, progress records, and environment ledgers.
 - `.gitignore` ignores `.env`, caches, root `try/` contents, and task `try/` contents while preserving `.gitkeep`.
 - `.env.example` contains placeholders only and no real secrets.
 - `doc/项目地图.md` records long-term workspace purpose and directory responsibilities.
 - `doc/任务索引.md` exists for cross-session tasks.
 - `doc/进展记录.md` records workspace-level summaries.
-- `skills/` exists and is empty except `.gitkeep` at creation.
+- For `multi-task` workspaces, root `skills/` is absent by default.
+- For `specialized` task-type workspaces, root `skills/` exists and is empty except `.gitkeep` at creation unless the user asked for skill entrypoints.
 - `try/` exists and contains no required project result.
 
 ## Task（小项目）

@@ -4,6 +4,11 @@ param(
 
   [string]$Name,
 
+  [ValidateSet("multi-task", "specialized")]
+  [string]$WorkspaceKind = "multi-task",
+
+  [switch]$Specialized,
+
   [switch]$Overwrite,
 
   [switch]$InitGit
@@ -15,6 +20,11 @@ $pythonScript = Join-Path $scriptDir "new_workspace.py"
 
 $argsList = @($pythonScript, $Path)
 if ($Name) { $argsList += @("--name", $Name) }
+if ($Specialized) {
+  $argsList += "--specialized"
+} else {
+  $argsList += @("--workspace-kind", $WorkspaceKind)
+}
 if ($Overwrite) { $argsList += "--overwrite" }
 if ($InitGit) { $argsList += "--init-git" }
 

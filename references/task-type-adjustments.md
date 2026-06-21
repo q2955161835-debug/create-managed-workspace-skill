@@ -2,6 +2,12 @@
 
 Use the standard workspace and task structure first. Add task-specific folders only when the task needs them, then document each folder in the task `doc/项目地图.md`.
 
+## Workspace Kind（工作区类型）
+
+- Use `multi-task` for general workspaces that contain many unrelated projects. Do not create or require root `skills/`.
+- Use `specialized` for a dedicated task-type workspace such as CAD, scraping, automation, or research when common skills, wrappers, or skill entrypoints should live with the workspace. Only this kind gets root `skills/`.
+- If a specialized workspace uses external skills instead of copied skills, root `skills/` may contain junctions, wrappers, README files, or `.gitkeep`; document the real external paths in root `doc/项目地图.md`.
+
 ## CAD（计算机辅助设计）
 
 - Keep each CAD task inside `tasks/YYYYMMDD-短任务名/`.
@@ -9,7 +15,7 @@ Use the standard workspace and task structure first. Add task-specific folders o
 - Put CAD source scripts, intermediate models, and draft geometry checks in `work/`.
 - Put final source, STEP/STL/3MF/GLB/DXF/DWG exports, screenshots, and verification notes in `output/`.
 - Use the task `try/` for disposable geometry experiments.
-- Store commonly used CAD skills in root `skills/` only when they are workspace-specific copies; otherwise record external paths in the task or root `doc/项目地图.md`.
+- Use root `skills/` only when the CAD workspace is a specialized task-type workspace. Store workspace-specific copies, wrappers, or junction entrypoints there; otherwise record external paths in the task or root `doc/项目地图.md`.
 
 ## Scraping（爬虫数据采集）
 
@@ -19,6 +25,7 @@ Use the standard workspace and task structure first. Add task-specific folders o
 - Maintain `doc/任务清单.md` when multiple URLs, files, APIs, or source channels need dedupe tracking.
 - Keep raw structured crawl outputs in `原始数据/` and downloaded files or snapshots in `原始文件/`.
 - Put temporary fetch tests and parser experiments in the task `try/`.
+- Use root `skills/` only for a specialized scraping workspace with reusable crawlers, extraction skills, or documented entrypoints. General multi-task workspaces that happen to include scraping tasks should not add root `skills/`.
 
 ## Research, Writing, and Automation（研究、写作与自动化）
 

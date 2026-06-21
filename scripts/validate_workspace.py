@@ -1,4 +1,4 @@
-"""Validate a standard managed workspace structure."""
+"""Validate a managed workspace structure."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ ROOT_FILES = [
     "tasks/README.md",
 ]
 
-ROOT_DIRS = ["doc", "skills", "tasks", "output", "try"]
+ROOT_DIRS = ["doc", "tasks", "output", "try"]
 TASK_PATHS = [
     "README.md",
     "doc/项目地图.md",
@@ -27,12 +27,21 @@ TASK_PATHS = [
     "output",
     "try",
 ]
+WORKSPACE_KINDS = ("auto", "multi-task", "specialized")
 
 
-def validate(root: Path) -> list[str]:
+def detect_workspace_kind(root: Path) -> str:
+    if (root / "skills").is_dir():
+        return "specialized"
+    return "multi-task"
+
+
+def validate(root: Path, workspace_kind: str) -> list[str]:
     errors: list[str] = []
     if not root.exists():
         return [f"工作区不存在：{root}"]
+
+    effective_kind = detect_workspace_kind(root) if workspace_kind == "auto" else workspace_kind
 
     for rel in ROOT_FILES:
         if not (root / rel).is_file():
@@ -40,11 +49,16 @@ def validate(root: Path) -> list[str]:
     for rel in ROOT_DIRS:
         if not (root / rel).is_dir():
             errors.append(f"缺少必需目录：{rel}")
+    if effective_kind == "specialized" and not (root / "skills").is_dir():
+        errors.append("专一任务类型工作区缺少必需目录：skills")
 
     agents = root / "AGENTS.md"
     if agents.exists():
         text = agents.read_text(encoding="utf-8", errors="replace")
-        for phrase in ["任务归属", "skills/", "try/", ".env.example"]:
+        phrases = ["任务归属", "try/", ".env.example"]
+        if effective_kind == "specialized":
+            phrases.append("skills/")
+        for phrase in phrases:
             if phrase not in text:
                 errors.append(f"AGENTS.md 缺少关键规则：{phrase}")
 
@@ -65,9 +79,15 @@ def validate(root: Path) -> list[str]:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("path", nargs="?", default=".", help="Workspace root to validate")
+    parser.add_argument(
+        "--workspace-kind",
+        choices=WORKSPACE_KINDS,
+        default="auto",
+        help="auto detects by root skills directory; specialized requires skills; multi-task does not",
+    )
     args = parser.parse_args()
 
-    errors = validate(Path(args.path).resolve())
+    errors = validate(Path(args.path).resolve(), args.workspace_kind)
     if errors:
         for error in errors:
             print(f"FAIL\t{error}")

@@ -1,4 +1,4 @@
 interface:
   display_name: "Create Managed Workspace"
-  short_description: "Create standard managed workspaces"
-  default_prompt: "Use $create-managed-workspace to create a standard managed workspace for a recurring project."
+  short_description: "Create multi-task or specialized managed workspaces"
+  default_prompt: "Use $create-managed-workspace to create a managed workspace and choose whether it is a general multi-task workspace or a specialized task-type workspace."
