@@ -1,0 +1,4 @@
+interface:
+  display_name: "Create Managed Workspace"
+  short_description: "Create standard managed workspaces"
+  default_prompt: "Use $create-managed-workspace to create a standard managed workspace for a recurring project."
