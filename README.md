@@ -31,14 +31,16 @@ Create Managed Workspace 是一个面向 Codex、Claude Code、opencode 等 Agen
 ├─ doc/
 │  ├─ 项目地图.md
 │  ├─ 任务索引.md
-│  └─ 进展记录.md
+│  └─ 进展记录/
+│     └─ YYYY-M-D.md
 ├─ tasks/
 │  ├─ README.md
 │  └─ YYYYMMDD-短任务名/
 │     ├─ README.md
 │     ├─ doc/
 │     │  ├─ 项目地图.md
-│     │  └─ 进展记录.md
+│     │  └─ 进展记录/
+│     │     └─ YYYY-M-D.md
 │     ├─ input/
 │     ├─ work/
 │     ├─ output/
@@ -60,11 +62,11 @@ Create Managed Workspace 是一个面向 Codex、Claude Code、opencode 等 Agen
 - `AGENTS.md`：工作区级规则入口，告诉 Agent 如何登记任务、放置产物、更新记录。
 - `doc/项目地图.md`：长期维护信息，记录工作区目标、目录职责、核心入口和环境账本。
 - `doc/任务索引.md`：跨会话任务总看板，记录每个任务的状态、目录、产物和下一步。
-- `doc/进展记录.md`：工作区级阶段总览，只记录简短摘要。
+- `doc/进展记录/YYYY-M-D.md`：工作区级阶段总览，只记录简短摘要，按记录完成日期每日一份。
 - `skills/`：仅专一任务类型工作区创建，用于常用 Skill 收纳位、包装脚本或外部技能入口；新建时只放 `.gitkeep`。
 - `tasks/`：每个小项目的主目录。
 - `tasks/.../doc/项目地图.md`：小项目自己的长期结构说明。
-- `tasks/.../doc/进展记录.md`：小项目自己的阶段进展记录。
+- `tasks/.../doc/进展记录/YYYY-M-D.md`：小项目自己的阶段进展记录，按记录完成日期每日一份。
 - `tasks/.../try/`：小项目自己的测试、调试、临时验证目录，清空后不得影响正式结果。
 - `output/`：工作区级历史成品或全局交付物，新任务优先使用 `tasks/.../output/`。
 - 根目录 `try/`：只放工作区级一次性调试内容。
@@ -197,7 +199,7 @@ python D:\2Folder\skills\create-managed-workspace\scripts\new_workspace.py "D:\P
 
 - `.env.example`
 - README
-- `doc/进展记录.md`
+- `doc/进展记录/YYYY-M-D.md`
 - 聊天中可复制的代码块
 
 ## 校验

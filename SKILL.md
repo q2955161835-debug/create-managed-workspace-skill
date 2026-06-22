@@ -35,14 +35,16 @@ Create this root structure by default:
 ├─ doc/
 │  ├─ 项目地图.md
 │  ├─ 任务索引.md
-│  └─ 进展记录.md
+│  └─ 进展记录/
+│     └─ YYYY-M-D.md
 ├─ tasks/
 │  ├─ README.md
 │  └─ YYYYMMDD-短任务名/
 │     ├─ README.md
 │     ├─ doc/
 │     │  ├─ 项目地图.md
-│     │  └─ 进展记录.md
+│     │  └─ 进展记录/
+│     │     └─ YYYY-M-D.md
 │     ├─ input/
 │     ├─ work/
 │     ├─ output/
@@ -67,7 +69,7 @@ Rules:
 - Give every task directory its own `try/`; clearing a task `try/` must not affect formal results.
 - Put task context in `tasks/YYYYMMDD-slug/README.md`.
 - Put task long-lived structure and directory responsibilities in `tasks/YYYYMMDD-slug/doc/项目地图.md`.
-- Put task progress in `tasks/YYYYMMDD-slug/doc/进展记录.md`.
+- Put task progress in `tasks/YYYYMMDD-slug/doc/进展记录/YYYY-M-D.md`, based on the record completion date.
 - Put task final deliverables in `tasks/YYYYMMDD-slug/output/`.
 
 ## Scripts

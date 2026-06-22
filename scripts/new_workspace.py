@@ -17,6 +17,11 @@ def now_minute() -> str:
     return datetime.now().strftime("%Y-%m-%d %H:%M")
 
 
+def today_progress_file() -> str:
+    now = datetime.now()
+    return f"{now.year}-{now.month}-{now.day}.md"
+
+
 def write_file(path: Path, content: str, overwrite: bool) -> None:
     if path.exists() and not overwrite:
         return
@@ -53,10 +58,10 @@ def workspace_agents(name: str, workspace_kind: str) -> str:
 - 简单问答、一次性搜索、无文件产出的会话不登记任务。
 
 ## 任务目录
-- 每个小项目目录默认包含 `README.md`、`doc/项目地图.md`、`doc/进展记录.md`、`input/`、`work/`、`output/`、`try/`。
+- 每个小项目目录默认包含 `README.md`、`doc/项目地图.md`、`doc/进展记录/`、`input/`、`work/`、`output/`、`try/`。
 - `README.md` 记录任务目标、当前状态、关键决策、下一步。
 - `doc/项目地图.md` 记录该小项目的长期信息、目录职责、入口、依赖和数据流。
-- `doc/进展记录.md` 记录该小项目阶段进展。
+- `doc/进展记录/YYYY-M-D.md` 记录该小项目阶段进展，按记录完成日期落入当天文件。
 - `try/` 只放该小项目的测试、调试、临时验证文件，清空后不得影响正式结果。
 
 ## 工作区目录
@@ -65,8 +70,8 @@ def workspace_agents(name: str, workspace_kind: str) -> str:
 - 根目录 `output/` 可保留历史成品；新任务产物优先放入对应 `tasks/.../output/`。
 
 ## 进展记录
-- 有任务目录的会话，在对应任务目录 `doc/进展记录.md` 记录阶段细节、文件清单和错误汇报。
-- 根目录 `doc/进展记录.md` 只保留简短总览：会话时间、任务名/路径、核心产出或结论。
+- 有任务目录的会话，在对应任务目录 `doc/进展记录/YYYY-M-D.md` 记录阶段细节、文件清单和错误汇报。
+- 根目录 `doc/进展记录/YYYY-M-D.md` 只保留简短总览：会话时间、任务名/路径、核心产出或结论。
 - 高风险操作前必须更新进展记录，并写清回退方案。
 
 ## 环境账本
@@ -123,7 +128,7 @@ tasks/*/try/**
 ## 目录职责
 - `AGENTS.md`：工作区规则。
 - `doc/任务索引.md`：跨会话任务总索引。
-- `doc/进展记录.md`：工作区级阶段总览。
+- `doc/进展记录/`：工作区级阶段总览，按记录完成日期每日一份。
 - `doc/项目地图.md`：长期维护信息。
 {"- `skills/`：专一任务类型工作区常用 Skill（技能）收纳位，新建时为空。" if workspace_kind == "specialized" else "- 多任务通用工作区默认不创建 `skills/`；若后续转为专一任务类型工作区，再新增并记录用途。"}
 - `tasks/`：小项目目录。
@@ -160,7 +165,7 @@ tasks/*/try/**
         overwrite,
     )
     write_file(
-        root / "doc" / "进展记录.md",
+        root / "doc" / "进展记录" / today_progress_file(),
         f"""# 进展记录
 
 ## {stamp} ~ {stamp}
@@ -174,7 +179,7 @@ tasks/*/try/**
         root / "tasks" / "README.md",
         """# tasks
 
-每个小项目使用 `YYYYMMDD-短任务名/` 命名，并包含 `README.md`、`doc/项目地图.md`、`doc/进展记录.md`、`input/`、`work/`、`output/`、`try/`。
+每个小项目使用 `YYYYMMDD-短任务名/` 命名，并包含 `README.md`、`doc/项目地图.md`、`doc/进展记录/`、`input/`、`work/`、`output/`、`try/`。
 """,
         overwrite,
     )

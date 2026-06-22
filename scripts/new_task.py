@@ -20,6 +20,11 @@ def today() -> str:
     return datetime.now().strftime("%Y%m%d")
 
 
+def today_progress_file() -> str:
+    now = datetime.now()
+    return f"{now.year}-{now.month}-{now.day}.md"
+
+
 def slugify(name: str) -> str:
     cleaned = re.sub(r"[\\/:*?\"<>|]+", "-", name.strip())
     cleaned = re.sub(r"\s+", "-", cleaned)
@@ -86,7 +91,7 @@ def create_task(workspace: Path, name: str, task_id: str | None, overwrite: bool
 ## 目录职责
 - `README.md`：任务目标、当前状态、关键决策和下一步。
 - `doc/项目地图.md`：本小项目长期维护信息。
-- `doc/进展记录.md`：本小项目阶段进展。
+- `doc/进展记录/YYYY-M-D.md`：本小项目阶段进展，按记录完成日期落入当天文件。
 - `input/`：输入资料。
 - `work/`：处理中间文件、草稿和脚本。
 - `output/`：最终交付物。
@@ -98,12 +103,12 @@ def create_task(workspace: Path, name: str, task_id: str | None, overwrite: bool
         overwrite,
     )
     write_file(
-        task / "doc" / "进展记录.md",
+        task / "doc" / "进展记录" / today_progress_file(),
         f"""# 进展记录
 
 ## {stamp} ~ {stamp}
 - 本阶段完成内容：创建小项目目录骨架。
-- 新增/修改/生成的文件清单与用途说明：`README.md`、`doc/项目地图.md`、`doc/进展记录.md`、`input/`、`work/`、`output/`、`try/`。
+- 新增/修改/生成的文件清单与用途说明：`README.md`、`doc/项目地图.md`、`doc/进展记录/`、`input/`、`work/`、`output/`、`try/`。
 - 错误汇报：无。
 """,
         overwrite,

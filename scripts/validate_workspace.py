@@ -13,15 +13,14 @@ ROOT_FILES = [
     ".env.example",
     "doc/项目地图.md",
     "doc/任务索引.md",
-    "doc/进展记录.md",
     "tasks/README.md",
 ]
 
-ROOT_DIRS = ["doc", "tasks", "output", "try"]
+ROOT_DIRS = ["doc", "doc/进展记录", "tasks", "output", "try"]
 TASK_PATHS = [
     "README.md",
     "doc/项目地图.md",
-    "doc/进展记录.md",
+    "doc/进展记录",
     "input",
     "work",
     "output",
