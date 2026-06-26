@@ -46,11 +46,16 @@ def maybe_git_init(root: Path) -> None:
 
 def workspace_agents(name: str, workspace_kind: str) -> str:
     skills_rule = (
-        "- 根目录 `skills/` 用于存放本专一任务类型工作区常用 Skill（技能），新建时保持空目录。\n"
+        "- `skills/`：本专一任务类型工作区常用 Skill（技能）、包装脚本或外部入口；新建时只保留 `.gitkeep`。\n"
         if workspace_kind == "specialized"
-        else "- 多任务通用工作区默认不创建根目录 `skills/`；只有转换为专一任务类型工作区时才新增。\n"
+        else "- `skills/`：多任务通用工作区默认不创建；只有转换为专一任务类型工作区时才新增并在本文件记录用途。\n"
     )
     return f"""# {name} 工作区规则
+
+## 工作区概览
+- `{name}` 是托管工作区，用于管理跨会话任务、小项目、产物和规则。
+- 工作区类型：`{workspace_kind}`。
+- 根目录 `doc/项目地图.md` 已废弃；工作区长期信息、目录职责、核心入口、运行/维护规则统一维护在本文件。
 
 ## 任务归属
 - 开始处理会产生文件、需要跨会话继续、或会留下多个产物的任务前，先检查 `doc/任务索引.md` 是否已有对应任务。
@@ -58,16 +63,22 @@ def workspace_agents(name: str, workspace_kind: str) -> str:
 - 简单问答、一次性搜索、无文件产出的会话不登记任务。
 
 ## 任务目录
-- 每个小项目目录默认包含 `README.md`、`doc/项目地图.md`、`doc/进展记录/`、`input/`、`work/`、`output/`、`try/`。
+- 每个小项目目录默认包含 `README.md`、`doc/项目地图.md`、`doc/验收标准.md`、`doc/进展记录/`、`input/`、`work/`、`output/`、`try/`。
 - `README.md` 记录任务目标、当前状态、关键决策、下一步。
 - `doc/项目地图.md` 记录该小项目的长期信息、目录职责、入口、依赖和数据流。
+- `doc/验收标准.md` 记录功能、交互、测试、人工验收流程、结果记录和最终结论。
 - `doc/进展记录/YYYY-M-D.md` 记录该小项目阶段进展，按记录完成日期落入当天文件。
 - `try/` 只放该小项目的测试、调试、临时验证文件，清空后不得影响正式结果。
 
 ## 工作区目录
+- `AGENTS.md`：工作区规则、目录职责、长期维护信息和 Agent（智能代理）执行约束。
+- `.env.example`：环境变量示例账本，只写变量名、占位值和说明。
+- `doc/任务索引.md`：跨会话任务总索引。
+- `doc/进展记录/`：工作区级阶段总览，按记录完成日期每日一份。
 {skills_rule.rstrip()}
-- 根目录 `try/` 只用于工作区级一次性调试和测试。
-- 根目录 `output/` 可保留历史成品；新任务产物优先放入对应 `tasks/.../output/`。
+- `tasks/`：小项目目录。
+- `output/`：历史成品或工作区级交付物；新任务产物优先放入对应 `tasks/.../output/`。
+- `try/`：工作区级一次性调试和测试。
 
 ## 进展记录
 - 有任务目录的会话，在对应任务目录 `doc/进展记录/YYYY-M-D.md` 记录阶段细节、文件清单和错误汇报。
@@ -119,35 +130,6 @@ tasks/*/try/**
         overwrite,
     )
     write_file(
-        root / "doc" / "项目地图.md",
-        f"""# 项目地图
-
-## 项目目标
-- `{name}` 是托管工作区，用于管理跨会话任务、小项目、产物和规则。
-
-## 目录职责
-- `AGENTS.md`：工作区规则。
-- `doc/任务索引.md`：跨会话任务总索引。
-- `doc/进展记录/`：工作区级阶段总览，按记录完成日期每日一份。
-- `doc/项目地图.md`：长期维护信息。
-{"- `skills/`：专一任务类型工作区常用 Skill（技能）收纳位，新建时为空。" if workspace_kind == "specialized" else "- 多任务通用工作区默认不创建 `skills/`；若后续转为专一任务类型工作区，再新增并记录用途。"}
-- `tasks/`：小项目目录。
-- `output/`：历史成品或工作区级交付物。
-- `try/`：工作区级测试、调试、临时验证文件。
-
-## 工作区类型
-- {workspace_kind}
-
-## 环境账本
-- `.env`：真实敏感配置，本机保存并禁止提交。
-- `.env.example`：变量名和占位说明。
-
-## 创建时间
-- {stamp}
-""",
-        overwrite,
-    )
-    write_file(
         root / "doc" / "任务索引.md",
         """# 任务索引
 
@@ -170,7 +152,7 @@ tasks/*/try/**
 
 ## {stamp} ~ {stamp}
 - 本阶段完成内容：创建标准托管工作区结构。
-- 新增/修改/生成的文件清单与用途说明：`AGENTS.md`、`.gitignore`、`.env.example`、`doc/`、{"`skills/`、" if workspace_kind == "specialized" else ""}`tasks/`、`output/`、`try/`。
+- 新增/修改/生成的文件清单与用途说明：`AGENTS.md`、`.gitignore`、`.env.example`、`doc/任务索引.md`、`doc/进展记录/`、{"`skills/`、" if workspace_kind == "specialized" else ""}`tasks/`、`output/`、`try/`。
 - 错误汇报：无。
 """,
         overwrite,
@@ -179,7 +161,7 @@ tasks/*/try/**
         root / "tasks" / "README.md",
         """# tasks
 
-每个小项目使用 `YYYYMMDD-短任务名/` 命名，并包含 `README.md`、`doc/项目地图.md`、`doc/进展记录/`、`input/`、`work/`、`output/`、`try/`。
+每个小项目使用 `YYYYMMDD-短任务名/` 命名，并包含 `README.md`、`doc/项目地图.md`、`doc/验收标准.md`、`doc/进展记录/`、`input/`、`work/`、`output/`、`try/`。
 """,
         overwrite,
     )

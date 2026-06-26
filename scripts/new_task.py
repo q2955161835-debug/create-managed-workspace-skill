@@ -91,6 +91,7 @@ def create_task(workspace: Path, name: str, task_id: str | None, overwrite: bool
 ## 目录职责
 - `README.md`：任务目标、当前状态、关键决策和下一步。
 - `doc/项目地图.md`：本小项目长期维护信息。
+- `doc/验收标准.md`：功能、交互、测试和人工验收清单。
 - `doc/进展记录/YYYY-M-D.md`：本小项目阶段进展，按记录完成日期落入当天文件。
 - `input/`：输入资料。
 - `work/`：处理中间文件、草稿和脚本。
@@ -103,12 +104,38 @@ def create_task(workspace: Path, name: str, task_id: str | None, overwrite: bool
         overwrite,
     )
     write_file(
+        task / "doc" / "验收标准.md",
+        """# 验收标准
+
+## 测试环境
+- 待填写：操作系统、运行工具、依赖版本、输入材料和人工验收条件。
+
+## 验收步骤
+| 步骤 | 操作 | 预期结果 | 证明方式 | 结果记录 |
+| --- | --- | --- | --- | --- |
+| 1 | 待填写 | 待填写 | 命令、测试、截图、日志、文件变化或人工确认 | 未执行 |
+
+## 自动验证
+- 待填写：可重复执行的命令；若无自动测试，写明原因。
+
+## 人工确认
+- 待填写：需要人工判断的视觉效果、点击体验、真实设备、浏览器兼容性或交付内容核对。
+
+## 反馈/问题
+- 待填写：未通过项、阻塞项、用户反馈和后续处理。
+
+## 最终结论
+- 待填写：通过、未通过或部分通过，并说明依据。
+""",
+        overwrite,
+    )
+    write_file(
         task / "doc" / "进展记录" / today_progress_file(),
         f"""# 进展记录
 
 ## {stamp} ~ {stamp}
 - 本阶段完成内容：创建小项目目录骨架。
-- 新增/修改/生成的文件清单与用途说明：`README.md`、`doc/项目地图.md`、`doc/进展记录/`、`input/`、`work/`、`output/`、`try/`。
+- 新增/修改/生成的文件清单与用途说明：`README.md`、`doc/项目地图.md`、`doc/验收标准.md`、`doc/进展记录/`、`input/`、`work/`、`output/`、`try/`。
 - 错误汇报：无。
 """,
         overwrite,

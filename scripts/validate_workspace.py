@@ -11,15 +11,16 @@ ROOT_FILES = [
     "AGENTS.md",
     ".gitignore",
     ".env.example",
-    "doc/项目地图.md",
     "doc/任务索引.md",
     "tasks/README.md",
 ]
 
 ROOT_DIRS = ["doc", "doc/进展记录", "tasks", "output", "try"]
+OBSOLETE_ROOT_FILES = ["doc/项目地图.md"]
 TASK_PATHS = [
     "README.md",
     "doc/项目地图.md",
+    "doc/验收标准.md",
     "doc/进展记录",
     "input",
     "work",
@@ -48,13 +49,16 @@ def validate(root: Path, workspace_kind: str) -> list[str]:
     for rel in ROOT_DIRS:
         if not (root / rel).is_dir():
             errors.append(f"缺少必需目录：{rel}")
+    for rel in OBSOLETE_ROOT_FILES:
+        if (root / rel).exists():
+            errors.append(f"废弃的根目录文件仍存在：{rel}；请将内容迁入 AGENTS.md")
     if effective_kind == "specialized" and not (root / "skills").is_dir():
         errors.append("专一任务类型工作区缺少必需目录：skills")
 
     agents = root / "AGENTS.md"
     if agents.exists():
         text = agents.read_text(encoding="utf-8", errors="replace")
-        phrases = ["任务归属", "try/", ".env.example"]
+        phrases = ["任务归属", "任务目录", "工作区目录", "try/", ".env.example"]
         if effective_kind == "specialized":
             phrases.append("skills/")
         for phrase in phrases:

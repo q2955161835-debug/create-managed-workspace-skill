@@ -1,6 +1,6 @@
 ---
 name: create-managed-workspace
-description: Create and validate managed workspaces for recurring project work. Use when Codex needs to create a multi-task workspace with AGENTS.md rules, doc/ project records, tasks/YYYYMMDD-slug task folders, per-task try folders, environment ledger files, or a specialized task-type workspace that also needs root skills storage. Also use when planning alignment of existing CAD, scraping, automation, research, or multi-output workspaces to this structure.
+description: Create and validate managed workspaces for recurring project work. Use when Codex needs to create a multi-task workspace with AGENTS.md rules, doc/task indexes, progress records, tasks/YYYYMMDD-slug task folders, task project maps, task acceptance criteria, per-task try folders, environment ledger files, or a specialized task-type workspace that also needs root skills storage. Also use when planning alignment of existing CAD, scraping, automation, research, or multi-output workspaces to this structure.
 ---
 
 # Create Managed Workspace
@@ -33,7 +33,6 @@ Create this root structure by default:
 ├─ .gitignore
 ├─ .env.example
 ├─ doc/
-│  ├─ 项目地图.md
 │  ├─ 任务索引.md
 │  └─ 进展记录/
 │     └─ YYYY-M-D.md
@@ -43,6 +42,7 @@ Create this root structure by default:
 │     ├─ README.md
 │     ├─ doc/
 │     │  ├─ 项目地图.md
+│     │  ├─ 验收标准.md
 │     │  └─ 进展记录/
 │     │     └─ YYYY-M-D.md
 │     ├─ input/
@@ -65,10 +65,12 @@ Rules:
 
 - Do not create root `skills/` for a general multi-task workspace.
 - Create root `skills/` only for a specialized task-type workspace. Keep it empty except `.gitkeep` at creation time, then store commonly used workspace-specific skills or documented entrypoints there.
+- Do not create root `doc/项目地图.md`; root-level long-lived workspace information, directory responsibilities, core entry points, and operating rules belong in `AGENTS.md`.
 - Keep root `try/` for workspace-level experiments only.
 - Give every task directory its own `try/`; clearing a task `try/` must not affect formal results.
 - Put task context in `tasks/YYYYMMDD-slug/README.md`.
 - Put task long-lived structure and directory responsibilities in `tasks/YYYYMMDD-slug/doc/项目地图.md`.
+- Put task acceptance steps, expected results, verification commands, manual checks, and final conclusion in `tasks/YYYYMMDD-slug/doc/验收标准.md`.
 - Put task progress in `tasks/YYYYMMDD-slug/doc/进展记录/YYYY-M-D.md`, based on the record completion date.
 - Put task final deliverables in `tasks/YYYYMMDD-slug/output/`.
 

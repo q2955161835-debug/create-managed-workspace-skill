@@ -4,7 +4,7 @@
 
 Create Managed Workspace 是一个面向 Codex、Claude Code、opencode 等 Agent 的 Skill，用于快速创建可长期维护的标准工作区。它适合那些会反复发生、但每次目标不同的任务类型，例如 CAD 建模、爬虫数据采集、研究写作、自动化脚本、文件转换和多产物项目。
 
-它的目标不是生成某一种业务代码，而是先把工作区治理结构搭好：规则入口、项目地图、任务索引、进展记录、临时测试区、最终产物区，以及每个小项目自己的 `try/` 调试目录。只有专一任务类型工作区才额外创建常用 Skill 收纳位。
+它的目标不是生成某一种业务代码，而是先把工作区治理结构搭好：`AGENTS.md` 规则入口、任务索引、进展记录、子项目项目地图、子项目验收标准、临时测试区、最终产物区，以及每个小项目自己的 `try/` 调试目录。只有专一任务类型工作区才额外创建常用 Skill 收纳位。
 
 ## 为什么需要它
 
@@ -21,7 +21,7 @@ Create Managed Workspace 是一个面向 Codex、Claude Code、opencode 等 Agen
 
 ## 生成的标准结构
 
-新工作区默认按 `multi-task`（多任务）模式创建，不包含根目录 `skills/`：
+新工作区默认按 `multi-task`（多任务）模式创建，不包含根目录 `skills/`，也不再创建根目录 `doc/项目地图.md`。根目录长期维护信息统一写入 `AGENTS.md`。
 
 ```text
 <workspace-root>/
@@ -29,7 +29,6 @@ Create Managed Workspace 是一个面向 Codex、Claude Code、opencode 等 Agen
 ├─ .gitignore
 ├─ .env.example
 ├─ doc/
-│  ├─ 项目地图.md
 │  ├─ 任务索引.md
 │  └─ 进展记录/
 │     └─ YYYY-M-D.md
@@ -39,6 +38,7 @@ Create Managed Workspace 是一个面向 Codex、Claude Code、opencode 等 Agen
 │     ├─ README.md
 │     ├─ doc/
 │     │  ├─ 项目地图.md
+│     │  ├─ 验收标准.md
 │     │  └─ 进展记录/
 │     │     └─ YYYY-M-D.md
 │     ├─ input/
@@ -59,13 +59,14 @@ Create Managed Workspace 是一个面向 Codex、Claude Code、opencode 等 Agen
 
 核心约定：
 
-- `AGENTS.md`：工作区级规则入口，告诉 Agent 如何登记任务、放置产物、更新记录。
-- `doc/项目地图.md`：长期维护信息，记录工作区目标、目录职责、核心入口和环境账本。
+- `AGENTS.md`：工作区级规则入口，记录工作区目标、目录职责、任务登记、产物放置、环境账本和 Agent 执行约束。
+- 根目录 `doc/项目地图.md`：已废弃，不再生成；旧内容应迁移到 `AGENTS.md`。
 - `doc/任务索引.md`：跨会话任务总看板，记录每个任务的状态、目录、产物和下一步。
 - `doc/进展记录/YYYY-M-D.md`：工作区级阶段总览，只记录简短摘要，按记录完成日期每日一份。
 - `skills/`：仅专一任务类型工作区创建，用于常用 Skill 收纳位、包装脚本或外部技能入口；新建时只放 `.gitkeep`。
 - `tasks/`：每个小项目的主目录。
-- `tasks/.../doc/项目地图.md`：小项目自己的长期结构说明。
+- `tasks/.../doc/项目地图.md`：小项目自己的长期结构说明，继续保留。
+- `tasks/.../doc/验收标准.md`：小项目的功能、交互、测试、人工验收、结果记录和最终结论清单。
 - `tasks/.../doc/进展记录/YYYY-M-D.md`：小项目自己的阶段进展记录，按记录完成日期每日一份。
 - `tasks/.../try/`：小项目自己的测试、调试、临时验证目录，清空后不得影响正式结果。
 - `output/`：工作区级历史成品或全局交付物，新任务优先使用 `tasks/.../output/`。
@@ -139,10 +140,10 @@ python D:\2Folder\skills\create-managed-workspace\scripts\new_workspace.py "D:\P
 
 | 脚本 | 用途 |
 | --- | --- |
-| `scripts/new_workspace.py` | 创建托管工作区根目录；默认多任务模式不建 `skills/`，专一任务类型模式才建 `skills/`。 |
+| `scripts/new_workspace.py` | 创建托管工作区根目录；默认多任务模式不建 `skills/`，不建根 `doc/项目地图.md`，专一任务类型模式才建 `skills/`。 |
 | `scripts/New-Workspace.ps1` | Windows PowerShell 包装器，调用 `new_workspace.py`。 |
-| `scripts/new_task.py` | 在 `tasks/` 下创建标准小项目目录。 |
-| `scripts/validate_workspace.py` | 检查工作区根目录和每个小项目是否符合结构要求。 |
+| `scripts/new_task.py` | 在 `tasks/` 下创建标准小项目目录，包含 `doc/项目地图.md` 和 `doc/验收标准.md`。 |
+| `scripts/validate_workspace.py` | 检查工作区根目录和每个小项目是否符合结构要求，并提示根 `doc/项目地图.md` 已废弃。 |
 
 脚本默认不覆盖已有文件。需要覆盖时显式传入 `--overwrite`。
 
@@ -155,9 +156,10 @@ python D:\2Folder\skills\create-managed-workspace\scripts\new_workspace.py "D:\P
 - `input/`：图纸、照片、PDF、参考尺寸。
 - `work/`：参数化建模源码、草稿、临时检查脚本。
 - `output/`：最终源码、STEP/STL/3MF/GLB/DXF/DWG、截图和核验记录。
+- `doc/验收标准.md`：导出文件检查、几何检查、截图/人工复核和最终结论。
 - `try/`：可随时清理的几何试验。
 
-如果 CAD Skill 存放在外部路径，只在 `doc/项目地图.md` 中记录路径，不必复制进工作区。只有 CAD 工作区被定义为专一任务类型，并且确实需要工作区私有版本、包装脚本或外部入口时，才放入根目录 `skills/`。
+如果 CAD Skill 存放在外部路径，工作区级路径记录在 `AGENTS.md`，任务级路径记录在对应任务 `doc/项目地图.md`，不必复制进工作区。只有 CAD 工作区被定义为专一任务类型，并且确实需要工作区私有版本、包装脚本或外部入口时，才放入根目录 `skills/`。
 
 ### 爬虫数据采集
 
@@ -167,6 +169,7 @@ python D:\2Folder\skills\create-managed-workspace\scripts\new_workspace.py "D:\P
 - 多来源采集时维护 `doc/任务清单.md`。
 - `原始数据/`、`原始文件/`、`旧数据/`、`清洗数据/` 等目录按需新增。
 - 新增目录必须在小项目 `doc/项目地图.md` 中说明用途、可删除性和是否承载最终数据。
+- 来源覆盖、去重检查、输出文件检查和人工复核写入小项目 `doc/验收标准.md`。
 - 抓取测试、解析器试验和一次性探针放入小项目 `try/`。
 
 ### 研究、写作、自动化
@@ -174,6 +177,7 @@ python D:\2Folder\skills\create-managed-workspace\scripts\new_workspace.py "D:\P
 - `input/`：题目、素材、参考资料、用户输入。
 - `work/`：草稿、脚本、Notebook、中间报告。
 - `output/`：最终文档、表格、脚本包或交付文件。
+- `doc/验收标准.md`：可重复命令、人工复核标准、输出文件检查和最终结论。
 - `try/`：一次性转换测试、命令探针、临时验证。
 
 ## 对既有工作区的整理原则
@@ -187,6 +191,7 @@ python D:\2Folder\skills\create-managed-workspace\scripts\new_workspace.py "D:\P
 推荐策略：
 
 - 先补齐缺失文档和 `try/`，再考虑移动历史文件。
+- 根目录 `doc/项目地图.md` 若存在，先把有用内容迁入 `AGENTS.md`，再删除废弃文件。
 - 已经组织良好的旧产物目录不要强行拆散。
 - Git 管理下的大规模整理前先创建检查点提交。
 - 目录改名、批量移动、删除历史产物前需要明确确认。
@@ -199,7 +204,9 @@ python D:\2Folder\skills\create-managed-workspace\scripts\new_workspace.py "D:\P
 
 - `.env.example`
 - README
+- `AGENTS.md`
 - `doc/进展记录/YYYY-M-D.md`
+- `doc/验收标准.md`
 - 聊天中可复制的代码块
 
 ## 校验
